@@ -1,0 +1,77 @@
+\documentclass[fleqn]{article}
+\renewcommand\refname{}
+
+\title{On Unhelpful eXplainable Machine Learning (XML) Misconceptions}
+\author{Patrick Hall}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+\usepackage[numbers]{natbib}
+
+\begin{document}
+
+\maketitle
+
+\vspace{-0.25in}
+
+\section{Misconception: Post-Hoc XML Methods and Interpretable Models are Mutually Exclusive}
+
+You can, and likely should, use post-hoc XML methods on white-box models, for example consider:
+
+\begin{itemize}
+\item Locally explainable models + global explainability techniques: rule-based classifiers + partial dependence plots
+\item Globally explainable models + local explainability techniques: decision trees + Shapley explanations
+\end{itemize}
+
+\textbf{Corollary Misconception: Post-Hoc XML Methods and Fairness Methods are Mutually Exclusive}
+
+In banks, using partial dependence plots and disparate impact analysis together is common place.
+
+\section{Misconception: XML Methods Only Provide Cover For Government and Commercial Entities to Use Black-Box ML for Nefarious Purposes}
+
+XML probably does provide cover to certain extent, but XML methods can be used to crack-open those same black-boxes. Take Angwin et al. (2016) as evidence that this type of investigative analysis of black-box models is possible \cite{angwin16}. Such investigations would likely only be improved by newer explanatory, debugging, and fairness tools. \\
+
+Moreover, many important technological advances present similar challenges, i.e. social media, strong encryption.  People are just now starting to understand and debate these issues for XML. I'm not sure this is fine, but I'd dare to say it is typical.
+
+\section{Misconception: XML is Just Models of Models}
+
+Yes, models of models or surrogate models, can be helpful explanatory tools, but most serious practitioners  I know understand surrogate models are usually approximate, or \textit{low-fidelity} explainers. So, most serious practitioners I know are also aware of methods to increase the fidelity of their surrogate models, see for instance Bastani, Kim, and Bastani (2017) or Hu et al. (2018) \cite{dt_surrogate2}, \cite{lime-sup}.\\
+
+Also, one of the most important breakthroughs in XML is Shapley explanations. These are typically model-specific (i.e. not a surrogate model), rigorously defined, high-fidelity global and local variable importance measures \cite{shapley}. There are many other model-specific XML methods. \\  
+
+For an ongoing list of many interpretable modeling, model debugging, and model-specific and model-agnostic XML techniques, please see:
+\begin{center}
+\url{https://github.com/jphall663/awesome-machine-learning-interpretability}
+\end{center}
+
+\textbf{Misconception Corollary: XML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models. See above. (It also turns out LIME can be a specific instance of Shapley explanations.)\\
+
+\section{Misconception: XML is a Totally New Thing}
+
+Somethings in XML are new, some are not. Many data practitioners in regulated industry and elsewhere have been using surrogate models, partial dependence plots, and white-box models for years. For instance:
+
+\begin{itemize}
+\item Serious references for surrogate models dating back to at least 1996 \cite{dt_surrogate1}.
+\item Partial dependence plots for GBM being proposed at least as far back as 1999 \cite{greedyfunction}.
+\item Breiman discussing using decision trees for serious commercial applications for a number of years in his seminal \textit{Two Cultures} paper \cite{two_cultures}.
+\item Before LIME was presented at KDD 2016, Equifax was developing methods for creating reason codes using monotonically constrained neural networks \cite{lime}, \cite{hall2016evolution}.
+\item ...
+\end{itemize}
+
+\section{Misconception: All the Key Terms in XML are Hopelessly Undefined}
+
+There is a long way to go toward a science of interpretable machine learning, but two definitions I find helpful and use frequently are:
+
+\begin{itemize}
+\item \textbf{Interpretable}: The ability to explain or to present in understandable terms to a human \cite{been_kim1}.
+\item \textbf{A Good Explanation}: When you can no longer keep asking why. \cite{gilpin2018explaining}.
+\end{itemize}
+
+\section{References}
+
+\vspace{-0.25in}
+\bibliographystyle{unsrtnat}
+\footnotesize
+\bibliography{XML_misconceptions.bib} 
+
+\end{document}
