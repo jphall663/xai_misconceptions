@@ -1,77 +1,143 @@
-\documentclass[fleqn]{article}
-\renewcommand\refname{}
+\documentclass{article}
 
-\title{On Unhelpful eXplainable Machine Learning (XML) Misconceptions}
-\author{Patrick Hall}
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2018
 
-\usepackage[colorlinks]{hyperref}
-\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
-\usepackage[numbers]{natbib}
+% ready for submission
+%\usepackage{nips_2018}
+
+% to compile a preprint version, e.g., for submission to arXiv, add
+% add the [preprint] option:
+\usepackage[preprint]{nips_2018}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2018}
+
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2018}
+% For citations
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+
+% For algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsfonts}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\title{Toward Dispelling Unhelpful Explainable Machine Learning (ML) Misconceptions}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+% Authors in alphabetical order
+\author{
+  Patrick Hall\thanks{H2O.ai and George Washington University}\\
+  Washington, DC\\
+  \texttt{patrick.hall@h2o.ai}}
 
 \begin{document}
 
 \maketitle
 
-\vspace{-0.25in}
+\begin{abstract}
 
-\section{Misconception: Post-Hoc XML Methods and Interpretable Models are Mutually Exclusive}
+This short text presents counter-factual arguments, common sense proposals, and references to address recently uncovered misinformation and misconceptions about explainable machine learning in the data science community. It also argues that post-hoc explanatory methods are a viable tool in a holistic, interpretable approach to machine learning.
 
-You can, and likely should, use post-hoc XML methods on white-box models, for example consider:
+\end{abstract}
+
+\section{Introduction}
+
+``Please don't do explainable ML,'' extolled an important researcher in the title of a recent short talk. The same talk also included claims such as, ``[Explainble ML] forces you to rely on two models instead of one,'' and intimated that explainable machine learning can be a foil for companies and governments to conduct unsavory deeds with unaccountable black-box models. \footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}}. Perhaps even more noteworthy was the online response, which included incorrect musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}}  
+
+\begin{figure}[htb]
+	\begin{center}
+		\includegraphics[scale=0.33]{img/figure_1.eps}
+		\label{fig:learning_problem}
+		\caption{An augmented learning problem diagram in which several post-hoc techniques create explanations for a credit scoring model. Adapted from \textit{Learning From Data} \cite{lfd}.}
+	\end{center}
+\end{figure}	
+
+In response, this short text aims to dispel several misconceptions about explainable ML and to fill in some obvious gaps in community knowledge. For clarity's sake and as illustrated in Figure \ref{fig:learning_problem}, here explainble ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
-\item Locally explainable models + global explainability techniques: rule-based classifiers + partial dependence plots
-\item Globally explainable models + local explainability techniques: decision trees + Shapley explanations
+\item Local and global feature importance methods, in particular Shapley values \cite{shapley}.
+\item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{lime}. 
+\item Local and global visualizations of model predictions such as partial dependence and individual conditional expectation (ICE) plots \cite{esl}, \cite{ice_plots}.
 \end{itemize}
 
-\textbf{Corollary Misconception: Post-Hoc XML Methods and Fairness Methods are Mutually Exclusive}
+By presenting definitions for key terms and addressing misconceptions, this text builds a case for a holistic approach to ML that includes white-box models along with explanatory, debugging, and fairness techniques and also argues that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water. 
 
-In banks, using partial dependence plots and disparate impact analysis together is common place.
+\paragraph{This text does not condone the use of black-box models with cursory applications of low fidelity post-hoc explanatory methods -- that is likely lazy, irresponsible, and unethical, and also potentially dangerous.}
 
-\section{Misconception: XML Methods Only Provide Cover For Government and Commercial Entities to Use Black-Box ML for Nefarious Purposes}
+\section{Misconception: All the Key Terms in Explainable ML are Undefined}
 
-XML probably does provide cover to certain extent, but XML methods can be used to crack-open those same black-boxes. Take Angwin et al. (2016) as evidence that this type of investigative analysis of black-box models is possible \cite{angwin16}. Such investigations would likely only be improved by newer explanatory, debugging, and fairness tools. \\
+While we are probably far from a true science, and concrete vocabulary, of interpretable machine learning, at least two helpful definitions have been coined previously.
 
-Moreover, many important technological advances present similar challenges, i.e. social media, strong encryption.  People are just now starting to understand and debate these issues for XML. I'm not sure this is fine, but I'd dare to say it is typical.
+\begin{itemize}
+\item \textbf{Interpretable}: ``The ability to explain or to present in understandable terms to a human'' -- in \textit{Towards a Rigorous Science of Interpretable Machine Learning} by Finale-Doshi and Kim (2017).
+\item \textbf{A Good Explanation}: ``When you can no longer keep asking why.'' -- in \textit{Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning} by Gilpin et al. (2018).
+\end{itemize}
 
-\section{Misconception: XML is Just Models of Models}
+From a literal reading of these two well-founded definitions, it would certainly seem that explanations contribute to some process being interpretable.  
 
-Yes, models of models or surrogate models, can be helpful explanatory tools, but most serious practitioners  I know understand surrogate models are usually approximate, or \textit{low-fidelity} explainers. So, most serious practitioners I know are also aware of methods to increase the fidelity of their surrogate models, see for instance Bastani, Kim, and Bastani (2017) or Hu et al. (2018) \cite{dt_surrogate2}, \cite{lime-sup}.\\
+\section{Misconception: Explainable ML is Just Models of Models}
 
-Also, one of the most important breakthroughs in XML is Shapley explanations. These are typically model-specific (i.e. not a surrogate model), rigorously defined, high-fidelity global and local variable importance measures \cite{shapley}. There are many other model-specific XML methods. \\  
+Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) a course, global summary of a complex model provided by a surrogate model can be helpful and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}   
 
-For an ongoing list of many interpretable modeling, model debugging, and model-specific and model-agnostic XML techniques, please see:
+One of the most exciting breakthroughs in explainable ML is tree shap, a model-specific (i.e. not a surrogate model), rigorously defined, accurate and consistent, global and local feature importance measure \cite{tree_shap}. There are many other model-specific explainable ML methods such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Also, surrogate models and model-specific explanatory techniques can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
+
+For a curated list of many different types of white-box modeling, model debugging, and model-specific, model-agnostic, and surrogate model explainable ML techniques, please see:
 \begin{center}
 \url{https://github.com/jphall663/awesome-machine-learning-interpretability}
 \end{center}
 
-\textbf{Misconception Corollary: XML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models. See above. (It also turns out LIME can be a specific instance of Shapley explanations.)\\
+\textbf{Misconception Corollary: Explainable ML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models \cite{lime}. LIME is popular, important, and imperfect, but just one of many explainable ML tools. And again, LIME can sometimes be combined with model-specific methods to yield deeper insights. Consider that tree shap can provide locally accurate and consistent point estimates for local feature importance whereas LIME can provide information about modeled local linear trends around the same point.   
 
-\section{Misconception: XML is a Totally New Thing}
+\section{Misconception: Explainable ML Methods Simply Provide Cover For Government and Commercial Entities to Use Black-Box ML for Nefarious Purposes}
 
-Somethings in XML are new, some are not. Many data practitioners in regulated industry and elsewhere have been using surrogate models, partial dependence plots, and white-box models for years. For instance:
+If used disingenuously, explainable ML methods probably do provide such cover, but explainable ML methods were designed to crack-open those same black-boxes. See Angwin et al. (2016) for evidence that this type of investigative analysis of commercial black-box models is possible \cite{angwin16}. Such investigations would likely only be improved by advances in explanatory, debugging, and fairness tools. \\
 
-\begin{itemize}
-\item Serious references for surrogate models dating back to at least 1996 \cite{dt_surrogate1}.
-\item Partial dependence plots for GBM being proposed at least as far back as 1999 \cite{greedyfunction}.
-\item Breiman discussing using decision trees for serious commercial applications for a number of years in his seminal \textit{Two Cultures} paper \cite{two_cultures}.
-\item Before LIME was presented at KDD 2016, Equifax was developing methods for creating reason codes using monotonically constrained neural networks \cite{lime}, \cite{hall2016evolution}.
-\item ...
-\end{itemize}
+Additionally, many important computer-based technological advances present similar double-edged sword dilemmas, i.e. social media, strong encryption. Rarely does the ability of a tool to be misused for nefarious purposes  disqualify it from being used as designed. Explainable AI methods need more debate and development. Dismissal and derision is unhelpful.
 
-\section{Misconception: All the Key Terms in XML are Hopelessly Undefined}
 
-There is a long way to go toward a science of interpretable machine learning, but two definitions I find helpful and use frequently are:
+\section{Misconception: Explainable ML Methods and White-box Models are Somehow Mutually Exclusive}
+
+Publications tend to focus on either white-box modeling techniques or on post-hoc explanations, but the two can be, and potentially should be, used together. Consider the seemingly useful case of augmenting globally interpretable models with local post-hoc explanations, or the converse, combining global explanatory methods with locally interpretable models.
 
 \begin{itemize}
-\item \textbf{Interpretable}: The ability to explain or to present in understandable terms to a human \cite{been_kim1}.
-\item \textbf{A Good Explanation}: When you can no longer keep asking why. \cite{gilpin2018explaining}.
+\item \textbf{Proposed globally interpretable model + local explainability method example}: Using a single pruned decision tree with local Shapley feature importance to see accurate feature contributions for each model prediction.
+\item \textbf{Proposed locally interpretable model + global explainability method example}: Combining a locally interpretable rule-based classifier, that produces a rule list for each prediction, with partial dependence plots to aid in understanding the complex rule-based response function w.r.t. to each model input or pairwise combination of inputs.  
 \end{itemize}
 
-\section{References}
+\textbf{Corollary Misconception: Explainable ML Methods and Fairness Methods are Somehow Mutually Exclusive}
 
-\vspace{-0.25in}
-\bibliographystyle{unsrtnat}
-\footnotesize
-\bibliography{XML_misconceptions.bib} 
+Like white-box models, fairness methods are often presented in different articles than post-hoc explanatory methods. However, in banks, using partial dependence plots for model validation and disparate impact analysis for fair lending purposes for the same model is common place.
 
+\section{Conclusion}
+
+%-------------------------------------------------------------------------------
+%\section{References}
+%-------------------------------------------------------------------------------
+
+\bibliographystyle{plain}
+\bibliography{xai_misconceptions}
 \end{document}
