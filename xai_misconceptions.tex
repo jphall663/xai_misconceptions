@@ -75,19 +75,20 @@ This short text presents arguments, proposals, and references to address recentl
 		\includegraphics[scale=0.33]{img/figure_1.png}
 		\label{fig:learning_problem}
 		\captionsetup{labelformat=empty}
-		\caption{\textbf{Figure:} An augmented learning problem diagram in which several post-hoc techniques create explanations for a credit scoring model. Adapted from \textit{Learning From Data} \cite{lfd}.}
+		\caption{\textbf{Figure:} An augmented learning problem diagram in which several post-hoc techniques create explanations for a credit scoring model. Adapted from \textit{Learning From Data} \cite{lfd}. <Suggestion(PC): We might want to add another 
+		arrow from explanations going back to hypothesis(These explanations are helping us improve our assumptions and hypothesis>} 
 	\end{center}
 \end{figure}	
 
-For clarity's sake and as illustrated in the figure below, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
+To avoid ambiguity and as illustrated in the figure below, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
-\item Local and global feature importance methods, in particular Shapley values \cite{shapley}.
+\item Local and global feature importance methods, in particular Shapley values \cite{keinan2004fair} \cite{kononenko2010efficient} \cite{shapley}.
 \item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{lime}. 
-\item Local and global visualizations of model predictions such as partial dependence and individual conditional expectation (ICE) plots \cite{esl}, \cite{ice_plots}.
+\item Local and global visualizations of model predictions such as partial dependence(1-way or 2-way interaction) and individual conditional expectation (ICE) plots \cite{esl}, \cite{ice_plots}.
 \end{itemize}
 
-By presenting definitions for key terms and at the same time addressing misconceptions, this text builds a case for a holistic approach to ML that includes white-box models along with explanatory, debugging, and fairness techniques. The article also implies that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water. 
+By presenting definitions for key terms and at the same time addressing misconceptions, this text builds a case for a holistic approach to ML that includes white-box models along with explanatory, debugging, and fairness techniques. The article also implies that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water<Suggestion:PC should we rephrase this>). 
 
 \paragraph{This text does not condone the use of black-box models with only cursory applications of low fidelity post-hoc explanatory methods -- that practice is likely lazy, irresponsible, and unethical, and also potentially dangerous.}
 
