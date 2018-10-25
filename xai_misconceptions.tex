@@ -83,12 +83,12 @@ This short text presents arguments, proposals, and references to address recentl
 To avoid ambiguity and as illustrated in the figure below, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
-\item Local and global feature importance methods, in particular Shapley values \cite{keinan2004fair} \cite{kononenko2010efficient} \cite{shapley}.
+\item Local and global feature importance methods, in particular Shapley values \cite{shapley1988shapley} \cite{keinan2004fair} \cite{kononenko2010efficient} \cite{shapley}.
 \item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{lime}. 
 \item Local and global visualizations of model predictions such as partial dependence(1-way or 2-way interaction) and individual conditional expectation (ICE) plots \cite{esl}, \cite{ice_plots}.
 \end{itemize}
 
-By presenting definitions for key terms and at the same time addressing misconceptions, this text builds a case for a holistic approach to ML that includes white-box models along with explanatory, debugging, and fairness techniques. The article also implies that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water<Suggestion:PC should we rephrase this>). 
+By presenting definitions for key terms and at the same time addressing misconceptions, this text builds a case for a holistic approach to ML that includes white-box models \cite{yang2016scalable} \cite{} along with explanatory, debugging, and fairness techniques. The article also implies that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water<Suggestion:PC should we rephrase this?>). 
 
 \paragraph{This text does not condone the use of black-box models with only cursory applications of low fidelity post-hoc explanatory methods -- that practice is likely lazy, irresponsible, and unethical, and also potentially dangerous.}
 
@@ -99,15 +99,20 @@ While far from a complete vocabulary, at least two helpful definitions that appl
 \begin{itemize}
 \item \textbf{Interpretable}: ``The ability to explain or to present in understandable terms to a human'' -- in \textit{Towards a Rigorous Science of Interpretable Machine Learning} by Doshi-Velez and Kim (2017).
 \item \textbf{A Good Explanation}: ``When you can no longer keep asking why'' -- in \textit{Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning} by Gilpin et al. (2018).
+<Suggestion:PC> How do you feel about using this quote from the paper("“Why does this particular input lead to that particular output?"), just so that it is more direct.
 \end{itemize}
 
 (From a literal reading of these two well-founded definitions, it would certainly appear that explanations contribute to some process being interpretable.)  
 
 \section{Misconception: Explainable ML is Just Models of Models}
 
-Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) a course, global summary of a complex model provided by a surrogate model can be helpful and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}   
+Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) a course, global summary of a complex model provided by a surrogate model can be helpful and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}
 
-One of the most exciting breakthroughs in explainable ML is tree shap, a model-specific (i.e. not a surrogate model), rigorously defined, accurate and consistent, global and local feature importance measure \cite{tree_shap}. There are many other explainable ML methods that operate on trained models directly such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Moreover, surrogate models and model-specific explanatory techniques can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
+One of the most exciting breakthroughs in explainable ML is tree shap, a model-specific (i.e. not a surrogate model), rigorously defined, accurate and consistent, global and local feature importance measure \cite{tree_shap}. 
+<Suggested:PC> Instead of talking about tree shap, how do you feel about talking about Shapley values in as general model agnostic concept \cite{kononenko2010efficient} and then add there is a model specific implementation for tree ensemble methods?>
+One of the most exciting breakthroughs in explainable ML is the application of coalitional game theory concept - Shapley values \cite{kononenko2010efficient} \cite{shapley} to compute feature contributions which are consistent globally and accurate locally for supervised learning problems using the original model itself(base estimator or the original learned explanation model). Another extension of this idea, has been explored for tree ensemble methods, called Tree SHAP \cite{tree_shap}. Keep in mind that computing Shapley Values is computationally expensive and we at h2o.ai are actively researching on ways to it more efficient.
+
+There are many other explainable ML methods that operate on original trained models directly such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Model agnostic, surrogate models and model-specific explanatory techniques can be combined to together as a unified explainable ML system. For e.g. one could use model agnostic partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled feature interactions \cite{art_and_sci}. 
 
 For a curated list of many different types of white-box modeling, model debugging, and model-specific, model-agnostic, and surrogate model explainable ML techniques, please see:
 \begin{center}
