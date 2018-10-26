@@ -116,7 +116,7 @@ Other authors have made significant attempts to grapple with a variety of concep
 
 \section{Misconception: Explainable ML is Just Models of Models}
 
-Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) of course, global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}   
+Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) of course, a global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}   
 
 One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. There are many other explainable ML methods that operate on trained models directly such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Notably, surrogate models and explanatory techniques that operate directly on trained models can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
 
@@ -135,7 +135,7 @@ Additionally, many important computer-based technological advances present simil
 
 \section{Misconception: Explainable ML Methods and White-box Models are Somehow Mutually Exclusive}
 
-Publications tend to focus on either white-box modeling techniques or on post-hoc explanations, but the two can be, and potentially should be, used together. Consider the seemingly useful cases of augmenting globally interpretable models with local post-hoc explanations, or the converse, combining global explanatory methods with locally interpretable models.
+A few well-known publications have focused either on white-box modeling techniques or on post-hoc explanations, but the two can be, and potentially should be, used together. Consider the seemingly useful cases of augmenting globally interpretable models with local post-hoc explanations, or the converse, combining global explanatory methods with locally interpretable models.
 
 \begin{itemize}
 \item \textbf{Proposed globally interpretable model + local explainability method example}: Using a single pruned decision tree with local Shapley feature importance to see accurate, numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree.
