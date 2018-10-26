@@ -78,7 +78,7 @@ This short text presents arguments, proposals, and references to address recentl
 
 \section{Introduction}
 
-``Please stop doing explainable ML,'' extolled one of the brightest minds in machine learning with the title of a recent, well-reasoned, and admittedly controversial short talk. The same talk also included points such as, ``[Explainable ML] forces you to rely on two models instead of one,'' and argued that explainable machine learning can be a foil for companies and governments to conduct unsavory or negligent deeds with black-box models. \footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}} Perhaps even more noteworthy was the online response, which included musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}} Strangely, neither the talk nor the follow-up discussions seemed to allow for combining white-box models and post-hoc explanatory techniques. This article aims to clear the misconceptions and fill the gaps in community knowledge exposed by these recent discussions. 
+``Please stop doing explainable ML,'' extolled one of the brightest minds in machine learning with the title of a recent, well-reasoned, and admittedly controversial short talk. The same talk also included points such as, ``[Explainable ML] forces you to rely on two models instead of one,'' and argued that explainable machine learning can be a foil for companies and governments to conduct unsavory or negligent deeds with black-box models. \footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}} Perhaps even more noteworthy was the online response, which included musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}} Strangely, neither the talk nor the follow-up discussions seemed to allow for combining white-box models and post-hoc explanatory techniques. 
 
 \begin{figure}[htb]
 	\begin{center}
@@ -89,7 +89,7 @@ This short text presents arguments, proposals, and references to address recentl
 	\end{center}
 \end{figure}	
 
-To avoid ambiguity and as illustrated in the figure below, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
+This article aims to clear the misconceptions and fill the gaps in community knowledge exposed by these recent discussions. To avoid ambiguity and as illustrated in the figure below, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
 \item Local and global feature importance methods, in particular Shapley values \cite{shapley1988shapley}, \cite{keinan2004fair}, \cite{kononenko2010efficient}, \cite{shapley}.
@@ -110,26 +110,28 @@ While far from a complete vocabulary, at least two helpful definitions that appl
 \item \textbf{A Good Explanation}: ``When you can no longer keep asking why'' -- in \textit{Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning} by Gilpin et al. (2018) \cite{gilpin2018explaining}. (Gilpin et al. also provide several clear constructs for describing more specific types of explanations.) 
 \end{itemize}
 
-From a literal reading of these two well-founded definitions, it would certainly appear that explanations contribute to some process being interpretable. Moreover, other authors have made significant attempts to grapple with a variety of concepts related to interpretability and explanations, including Zachary Lipton's \textit{The Mythos of Model Interpretability} (2016) and Christoph Molnar's \textit{Interpretable Machine Learning} (2018) \cite{lipton1}, \cite{molnar}. 
+From a literal reading of these two well-founded definitions, it would certainly appear that explanations contribute to some process being interpretable.\\
+ 
+Other authors have made significant attempts to grapple with a variety of concepts related to interpretability and explanations, including ``A Survey Of Methods For Explaining Black Box Models'' by Guidotti et al. (2018), Zachary Lipton's ``The Mythos of Model Interpretability'' (2016), Christoph Molnar's \textit{Interpretable Machine Learning} (2018), and Adrian Weller's ``Challenges for Transparency'' (2017) \cite{guidotti2018survey},  \cite{lipton1}, \cite{molnar}, \cite{weller2017challenges}. 
 
 \section{Misconception: Explainable ML is Just Models of Models}
 
 Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from the facts that 1.) of course, global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \citep{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textit{many explainable ML techniques have nothing to do with surrogate models!}   
 
-One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called Tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. There are many other explainable ML methods that operate on trained models directly such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Notably, surrogate models and explanatory techniques that operate directly on trained models can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
+One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. There are many other explainable ML methods that operate on trained models directly such as partial dependence and ICE plots \cite{esl}, \cite{ice_plots}. Notably, surrogate models and explanatory techniques that operate directly on trained models can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
 
 For a curated list of many different types of white-box modeling, model debugging, and model-specific, model-agnostic, and surrogate model explainable ML techniques, please see:
 \begin{center}
 \url{https://github.com/jphall663/awesome-machine-learning-interpretability}
 \end{center}
 
-\textbf{Misconception Corollary: Explainable ML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models \cite{lime}. LIME is important, and imperfect, but just one of many explainable ML tools. And again, LIME can sometimes be combined with model-specific methods to yield deeper insights. Consider that tree shap can provide locally accurate and consistent point estimates for local feature importance whereas LIME can provide approximate information about modeled local linear trends around the same point.   
+\textbf{Misconception Corollary: Explainable ML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models \cite{lime}. LIME is important, and imperfect, but just one of many explainable ML tools. And again, LIME can sometimes be combined with model-specific methods to yield deeper insights. Consider that tree SHAP can provide locally accurate and consistent point estimates for local feature importance whereas LIME can provide approximate information about modeled local linear trends around the same point.   
 
 \section{Misconception: Explainable ML Methods Simply Provide Cover For Government and Commercial Entities to Use Black-Box ML for Nefarious Purposes}
 
 If used disingenuously, explainable ML methods probably do provide such cover, but explainable ML methods were designed specifically to crack open those same nefarious and complex black-boxes. See Angwin et al. (2016) for evidence that investigative analysis of commercial black-box models is possible \cite{angwin16}. Such investigations would likely only be improved by advances in explanatory, debugging, and fairness tools. \\
 
-Additionally, many important computer-based technological advances present similar double-edged sword dilemmas, i.e. social media or strong encryption. Rarely does the ability of a tool to be misused for malicious purposes disqualify it from being used as designed. Many explainable ML methods have already been implemented into open source software and are being used somewhat widely. The techniques need more public debate, scrutiny, and development, not dismissal and derision.
+Additionally, many important computer-based technological advances present similar double-edged sword dilemmas, i.e., social media or strong encryption. Rarely does the ability of a tool to be misused for malicious purposes disqualify it from being used as designed. Many explainable ML methods have already been implemented into open source software and are being used somewhat widely. The techniques need more public debate, scrutiny, and development, not dismissal and derision.
 
 \section{Misconception: Explainable ML Methods and White-box Models are Somehow Mutually Exclusive}
 
@@ -142,7 +144,7 @@ Publications tend to focus on either white-box modeling techniques or on post-ho
 
 \textbf{Corollary Misconception: Explainable ML Methods and Fairness Methods are Somehow Mutually Exclusive}
 
-Like white-box models, fairness methods are often presented in different articles than post-hoc explanatory methods. However, in banks, using partial dependence plots for model validation and disparate impact analysis for fair lending purposes for the same model is common place.
+Like white-box models, fairness methods are often presented in different articles than post-hoc explanatory methods. However, in banks, using partial dependence plots for model validation and disparate impact analysis for fair lending purposes for the same model is somewhat commonplace.
 
 \section{Conclusion}
 
