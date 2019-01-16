@@ -84,8 +84,7 @@ This short text presents arguments, proposals, and references to address recentl
 	\begin{center}
 		\includegraphics[scale=0.33]{img/figure_1.png}
 		\label{fig:learning_problem}
-		\captionsetup{labelformat=empty}
-		\caption{\textbf{Figure:} An augmented learning problem diagram in which several post-hoc techniques create explanations for a credit scoring model $g$. Explanations can increase understanding of $g$ and help improve subsequent applications of $\mathcal{H}$ and $\mathcal{A}$. Adapted from \textit{Learning From Data} \cite{lfd}.}
+		\caption{An augmented learning problem diagram in which several post-hoc techniques create explanations for a credit scoring model $g$. Explanations can increase understanding of $g$ and help improve subsequent applications of $\mathcal{H}$ and $\mathcal{A}$. Adapted from \textit{Learning From Data} \cite{lfd}.}
 	\end{center}
 \end{figure}	
 
@@ -135,7 +134,17 @@ Additionally, many important computer-based technological advances present simil
 
 \section{Misconception: Explainable ML Methods and White-box Models are Somehow Mutually Exclusive}
 
-A few well-known publications have focused either on white-box modeling techniques or on post-hoc explanations, but the two can be, and potentially should be, used together. Consider the seemingly useful cases of augmenting globally interpretable models with local post-hoc explanations, or the converse, combining global explanatory methods with locally interpretable models.
+A few well-known publications have focused either on white-box modeling techniques or on post-hoc explanations, but the two can be, and potentially should be, used together in the context of  a broader and more human-centered machine learning paradigm as in Figure \ref{fig:hc_ml}. 
+
+\begin{figure}[htb]
+	\begin{center}
+		\includegraphics[scale=0.33]{img/figure_2.png}
+		\caption{A diagram of a theoretical human-centered machine learning workflow in which explanations are used along with interpretable models, fairness techniques, and other review and appeal mechanisms to create a fair, accountable, and transparent ML system.}
+		\label{fig:hc_ml}
+	\end{center}
+\end{figure}	
+
+Consider the seemingly useful cases of augmenting globally interpretable models with local post-hoc explanations, or the converse, combining global explanatory methods with locally interpretable models.
 
 \begin{itemize}
 \item \textbf{Proposed globally interpretable model + local explainability method example}: Using a single pruned decision tree with local Shapley feature importance to see accurate, numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree.
