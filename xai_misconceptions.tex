@@ -1,5 +1,13 @@
 % Copyright Patrick Hall 2019
 % CC by 4.0 license
+% TODO: 
+% - move conclusion to introduction
+% - replace hypotheticals with examples, keep code in repo
+% -- h2o-3 GBM DT + shapley; global shapley, resid analysis
+% -- on PAY_0 being too important -- dont trust it
+% - reintroduce model debugging and define roughly
+% - publish on medium  
+
 
 \documentclass[fleqn]{article}
 
@@ -42,17 +50,11 @@
 
 \maketitle
 
-\begin{abstract}
-
-This short text presents arguments, proposals, and references to address recently uncovered misinformation and misconceptions about explainable machine learning. It also argues that post-hoc explanatory methods are one of several viable types of tools in a holistic, human-centered, and low-risk approach to machine learning.
-
-\end{abstract}
-
 \section*{Introduction}
 
-``Please stop doing explainable machine learning,'' extolled one of the brightest minds in machine learning (ML) with the title of a recent and well-reasoned essay \cite{please_stop}. A related and admittedly-controversial short talk also included points such as, ``[Explainable ML] forces you to rely on two models instead of one,'' and argued that explainable machine learning can be a foil for companies and governments to conduct unsavory or negligent deeds with black-box models.\footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}} Perhaps even more noteworthy was the online response, which included musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}} This article aims to clear up such misconceptions and fill the gaps in community knowledge exposed by these sentiments.
+As someone who has been involved in the implementation of explainable machine learning (ML) software for the past three years, I find a lot of what I read about the topic confusing and detached from my personal, hands-on experiences. This short text presents arguments, proposals, and references to address explainable ML misconceptions. Please note that this text is not an attack on any party. However, it does promote informed debate, scrutiny, and continued development of explainable ML, and not dismissal or derision of the discipline. Due to obvious community and customer demand, explainable ML methods have already been implemented in popular open source software and in commercial software.\footnote{Like h2o-3, xgboost, and various other Python and R packages. See: \url{https://github.com/jphall663/awesome-machine-learning-interpretability} for a longer, curated list of open source software packages.}\textsuperscript{,}\footnote{For instance  Datarobot, H2O Driverless AI, SAS Visual Data Mining and Machine Learning, Zest AutoML, and likely several others.} The methods will likely be used widely and proper usage discussions are probably more helpful than ``please stop'' requests \cite{please_stop}. Moreover, this text builds the seemingly natural case for a holistic approach to ML that includes interpretable (i.e ``white-box'') models along with explanatory, debugging, and disparate impact analysis and remediation techniques. Much groundbreaking work has been done in several related disciplines to make machine learning more interpretable and trustworthy, and the cursory application of traditional black-box ML to human-centered problems is now an outdated, ethically problematic, and potentially dangerous practice.\\
 
-%Strangely, neither the talk nor the follow-up discussions seemed to allow for combining white-box models and post-hoc explanatory techniques. 
+%``Please stop doing explainable machine learning,'' extolled one of the brightest minds in machine learning (ML) with the title of a recent and well-reasoned essay \cite{please_stop}. A related and admittedly-controversial short talk also included points such as, ``[Explainable ML] forces you to rely on two models instead of one,'' and argued that explainable machine learning can be a foil for companies and governments to conduct unsavory or negligent deeds with black-box models.\footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}} Perhaps even more noteworthy was the online response, which included musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}} This article aims to clear up such misconceptions and fill the gaps in community knowledge exposed by these sentiments. Strangely, neither the talk nor the follow-up discussions seemed to allow for combining white-box models and post-hoc explanatory techniques. 
 
 \begin{figure}[htb]
 	\begin{center}
@@ -62,16 +64,15 @@ This short text presents arguments, proposals, and references to address recentl
 	\end{center}
 \end{figure}	
 
-To avoid ambiguity, and as illustrated in Figure \ref{fig:learning_problem}, here explainable ML means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
+To avoid ambiguity, several initial internal definitions and accompanying examples are outlined before discussing misconceptions. As illustrated in Figure \ref{fig:learning_problem}, here \textit{explainable ML} means post-hoc techniques used to understand trained model behavior or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
 \item Local and global feature importance methods, in particular Shapley values \cite{shapley1988shapley}, \cite{keinan2004fair}, \cite{kononenko2010efficient}, \cite{shapley}.
 \item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{lime}. 
-\item Local and global visualizations of model predictions such as 1- and 2-dimensional partial dependence and individual conditional expectation (ICE) plots \cite{esl}, \cite{ice_plots}.
+\item Local and global visualizations of model predictions such as accumulated local effect (ALE), 1- and 2-dimensional partial dependence, and individual conditional expectation (ICE) plots \cite{ale_plot}, \cite{esl}, \cite{ice_plots}.
 \end{itemize}  
 
-By presenting clarifications, highlighting definitions, and addressing misconceptions, this text also builds a seemingly natural case for a holistic approach to ML that includes white-box models along with explanatory and disparate impact analysis and remediation techniques.  %The article also implies that ignoring an entire set of methods because \textit{some subset} of the methods are approximate is akin to throwing the baby out with the bath water. 
-\textbf{This text does not condone the use of black-box models without explanation and disparate impact analysis.} That practice is now outdated, likely lazy and unethical, and potentially dangerous.
+\noindent In this text \textit{model debugging} refers to testing ML models to increase trust in model mechanisms and predictions. Examples of model debugging techniques include variants of sensitivity (i.e. ``what-if?'') and residual analysis used to test models for errors or security vulnerabilities. Model debugging should also include remediating any discovered errors or vulnerabilities. Herein \textit{fairness} techniques refer to canonical disparate impact analysis, model selection by minimization of disparate impact, and remediation techniques such as disparate impact removal preprocessing or equalized odds post processing \cite{feldman2015certifying}, \cite{hardt2016equality}. In this text \textit{interpretable} or \textit{white-box} models will include linear models, decision trees, constrained or Bayesian variants of traditional black-box ML models, or novel types of models designed to be directly interpretable. Additional examples of interpretable modeling techniques include explainable neural networks (XNNs), monotonically constrained gradient boosting machines (GBMs)\footnote{As implemented in XGBoost (\url{https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html}) or H2O-3 (\url{https://github.com/h2oai/h2o-3/blob/master/h2o-py/demos/H2O_tutorial_gbm_monotonicity.ipynb}).}, scalable Bayesian rule lists, or super-sparse linear integer models (SLIMs) \cite{wf_xnn}, \cite{sbrl}, \cite{slim}. Herein unconstrained, traditional black-box ML models, such as multilayer perceptron (MLP) neural networks and GBMs, are said to be uninterpretable. 
 
 \section{Misconception: Explanations are Necessary and Sufficient to Establish Trust in ML}
 
@@ -80,17 +81,35 @@ Explanation, as a general concept, is related more directly to understanding and
 
 \begin{itemize}
 
-\item \textbf{Explanation and understanding without trust}: After a disparate impact and explanatory analysis, a practitioner finds substantial errors or demographic disparity in model predictions or they find counter-intuitive or hackable attributes in the model's decision-making mechanisms. In this example scenario, the model is explainable and well-understood, but not trustworthy. 
+\item \textbf{Explanation and understanding without trust}: In Figure \ref{fig:figure_2}, global Shapley explanations and residual analysis identify a pathology in an unconstrained GBM model, $g_{\text{GBM}}$. $g_{\text{GBM}}$ over emphasizes the input feature \texttt{PAY\_0}, or a customer's most recent repayment status. Over-weighing \texttt{PAY\_0} makes $g_{\text{GBM}}$ often unable to predict on-time payment if recent payments are delayed (\texttt{PAY\_0} $>$ 1), causing large negative residuals. $g_{\text{GBM}}$ is also often unable to predict default if recent payments are on-time (\texttt{PAY\_0} $leq$ 1), causing large positive residuals. In this example scenario, $g_{\text{GBM}}$ is explainable, but not trustworthy. 
 
-\item \textbf{Trust without explanation and understanding}: Years before reliable explanation techniques were widely acknowledged and available, black-box predictive models such as neural networks were used for fraud detection in the financial services industry \cite{gopinathan1998fraud}. When these models performed well, they were trusted.\footnote{For example: \url{https://www.sas.com/en_ph/customers/hsbc.html}.} However, they were not explainable or well-understood by contemporary standards.  
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+  %\centering
+  \includegraphics[width=.84\linewidth]{img/figure_2a.png}
+  \caption{Global Shapley feature importance values for $g_{\text{GBM}}$.}
+  \label{fig:2a}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth]{img/figure_2b.png}
+  \caption{$g_{\text{GBM}}$ deviance residuals and predictions by \texttt{PAY\_0}.}
+  \label{fig:2b}
+\end{subfigure}
+\label{fig:figure_2}
+\caption{An unconstrained GBM probability of default model, $g_{\text{GBM}}$, over-emphasizes the importance of the input feature \texttt{PAY\_0}, a customer's most recent repayment status. $g_{\text{GBM}}$ produces large positive residuals when \texttt{PAY\_0} indicates on-time payments and large negative residuals when \texttt{PAY\_0} indicates late payments.}
+\label{fig:figure_2}
+\end{figure}
+
+\item \textbf{Trust without explanation and understanding}: Years before reliable explanation techniques were widely acknowledged and available, black-box predictive models, such as autoencoder and MLP neural networks, were used for fraud detection in the financial services industry \cite{gopinathan1998fraud}. When these models performed well, they were trusted.\footnote{For example: \url{https://www.sas.com/en_ph/customers/hsbc.html}, \url{https://www.kdnuggets.com/2011/03/sas-patent-fraud-detection.html}.} However, they were not explainable or well-understood by contemporary standards.  
 
 \end{itemize}
 
-If trust in models is your goal, then explanations alone are not sufficient. However, as discussed in Section \ref{sec:white_box} and illustrated in Figure \ref{fig:hc_ml}, in an ideal scenario, explanation and understanding would lead to better accuracy, fairness, interpretability, privacy, security, and trust in ML models. (In this text, \textit{fairness} refers to observational fairness as quantified by disparate impact analysis.)
+If trust in models is your goal, then explanations alone are not sufficient. However, as discussed in Section \ref{sec:white_box} and illustrated in Figure \ref{fig:hc_ml}, in an ideal scenario, explanation techniques would be used with a wide variety of other methods to increase accuracy, fairness, interpretability, privacy, security, and trust in ML models. 
 
 \section{Misconception: Explainable ML is Unnecessary}
 
-Explanation of model mechanisms and predictions is mandated under the Fair Credit Reporting Act for credit lending decisions. Explanation, along with disparate impact analysis and the documentation they enable, can also be required under the Civil Rights Acts of 1964 and 1991, the Americans with Disabilities Act, the Genetic Information Nondiscrimination Act, the Health Insurance Portability and Accountability Act, the Equal Credit Opportunity Act, the Fair Housing Act, Federal Reserve SR 11-7, the European Union (EU) Greater Data Privacy Regulation (GDPR) Article 22, and other regulatory statutes \cite{ff_interpretability}.
+Local feature importance values for negative credit decisions, i.e. adverse action codes, are mandated under the Fair Credit Reporting Act for many credit lending decisions in the United States. If machine learning is used for such decisions, it has to be explained with local feature importance. In a number of other application domains, broader interpretability is also legal necessity. Explanation, along with white-box models, model debugging, disparate impact analysis, and the documentation they enable, can also be required under the Civil Rights Acts of 1964 and 1991, the Americans with Disabilities Act, the Genetic Information Nondiscrimination Act, the Health Insurance Portability and Accountability Act, the Equal Credit Opportunity Act, the Fair Housing Act, Federal Reserve SR 11-7, the European Union (EU) Greater Data Privacy Regulation (GDPR) Article 22, and other regulatory statutes \cite{ff_interpretability}.
 
 \section{Misconception: All the Key Terms in Explainable ML are Undefined}
 
@@ -128,7 +147,7 @@ A few well-known publications have focused either on white-box modeling techniqu
 
 \begin{figure}[htb]
 	\begin{center}
-		\includegraphics[scale=0.15]{img/figure_2.png}
+		\includegraphics[scale=0.15]{img/figure_3.png}
 		\caption{A diagram of a proposed human-centered machine learning workflow in which explanations (highlighted in green) are used along with interpretable models, disparate impact analysis and remediation techniques, and other review and appeal mechanisms to create a fair, accountable, and transparent ML system.}
 		\label{fig:hc_ml}
 	\end{center}
@@ -140,7 +159,7 @@ Consider the seemingly useful example case of augmenting globally interpretable 
 
 \section*{Conclusion}
 
-This short text is not an attack on any party. However, it does promote informed debate, scrutiny, and development of explainable ML, and not the dismissal or derision the discipline. Explainable ML methods have already been implemented into popular open source software and into commercial software.\footnote{Like h2o-3, xgboost, and various other Python and R packages. See: \url{https://github.com/jphall663/awesome-machine-learning-interpretability} for a longer, curated list of open source software packages.}\textsuperscript{,}\footnote{At least Datarobot, H2O Driverless AI, SAS Visual Data Mining and Machine Learning, Zest AutoML as of April 21\textsuperscript{st} 2019} They will likely be used widely. Proper usage discussions are likely more practical than ``please stop'' requests. Moreover, much credible work has been done in several disciplines to make machine learning more interpretable and trustworthy, and thus better as a science. All of that work is likely less valuable in silos, and likely more valuable and practical when used in combination. As argued in this short text, the proper usage of explainable ML today appears to be along side of interpretable models and disparate impact analysis. 
+%Machine learning systems are used today to make life-altering decisions about employment, bail, parole, and lending. The scope of decisions delegated to machine learning systems seems likely only to expand in the future. Unfortunately serious discrimination, privacy, and even accuracy concerns can be raised about these systems. Many researchers and practitioners are tackling disparate impact, inaccuracy, privacy violations, and security vulnerabilities with a number of brilliant, but often siloed, approaches. This short text illustrates how to combine innovations from several sub-disciplines of machine learning research to train explainable, fair, trustable, and accurate predictive modeling systems. Together these techniques can create a new and truly human-centered type of machine learning suitable for use in business- and life-critical decision support.
 
 \section*{Acknowledgemnts}
 
