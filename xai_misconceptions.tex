@@ -2,7 +2,7 @@
 % CC by 4.0 license
 % TODO: 
 % - replace hypotheticals with examples - see figures below
-% - define human centered ML in conclusion	 
+% - define human centered ML in conclusion	/move figure 3 to conclusion 
 
 
 \documentclass[fleqn]{article}
@@ -42,6 +42,17 @@
 \usepackage{changepage}
 \usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
 
+%two part definition
+\newcommand{\twopartdef}[4]
+{
+	\left\{
+		\begin{array}{ll}
+			#1 & \mbox{if } #2 \\
+			#3 & \mbox{if } #4
+		\end{array}
+	\right.
+}
+
 \begin{document}
 
 \maketitle
@@ -77,7 +88,7 @@ Explanation, as a general concept, is related more directly to understanding and
 
 \begin{itemize}
 
-\item \textbf{Explanation and understanding without trust}: In Figure \ref{fig:global_shap_resid}, global Shapley explanations and residual analysis identify a pathology in an unconstrained GBM model, $g_{\text{GBM}}$. $g_{\text{GBM}}$ over emphasizes the input feature \texttt{PAY\_0}, or a customer's most recent repayment status. Due to over-emphasis of \texttt{PAY\_0}, $g_{\text{GBM}}$ is often unable to predict on-time payment if recent payments are delayed (\texttt{PAY\_0} $>$ 1), causing large negative residuals. $g_{\text{GBM}}$ is also often unable to predict default if recent payments are on-time (\texttt{PAY\_0} $\leq$ 1), causing large positive residuals. In this example scenario, $g_{\text{GBM}}$ is explainable, but not trustworthy. 
+\item \textbf{Explanation and understanding without trust}: In Figure \ref{fig:global_shap_resid}, global Shapley explanations and residual analysis identify a pathology in an unconstrained GBM model, $g_{\text{GBM}}$, trained on the UCI credit card data \cite{uci}.\footnote{Code to replicate Figure \ref{fig:global_shap_resid} is available here: \url{https://github.com/jphall663/xai_misconceptions}.} $g_{\text{GBM}}$ over emphasizes the input feature \texttt{PAY\_0}, or a customer's most recent repayment status. Due to over-emphasis of \texttt{PAY\_0}, $g_{\text{GBM}}$ is often unable to predict on-time payment if recent payments are delayed (\texttt{PAY\_0} $>$ 1), causing large negative residuals. $g_{\text{GBM}}$ is also often unable to predict default if recent payments are on-time (\texttt{PAY\_0} $\leq$ 1), causing large positive residuals. In this example scenario, $g_{\text{GBM}}$ is explainable, but not trustworthy. 
 
 \begin{figure}
 	\begin{subfigure}{.4\textwidth}
@@ -102,7 +113,7 @@ If trust in models is your goal, then explanations alone are not sufficient. How
 
 \section{Misconception: Explainable ML is Unnecessary}
 
-Explainable ML tools like surrogate models, partial dependence plots, and global feature importance are already used to document, understand, and validate different types of models in the financial services industry \cite{lime-sup}.\footnote{Working paper: \url{https://www.linkedin.com/feed/update/urn:li:activity:6526203034966507520}} Moreover, adverse action notices are mandated under the Equal Credit Opportunity Act (ECOA) and the Fair Credit Reporting Act (FCRA) for many credit lending decisions in the United States.\footnote{\url{https://consumercomplianceoutlook.org/2013/second-quarter/adverse-action-notice-requirements-under-ecoa-fcra/}} If machine learning is used for such decisions it must be explained in terms of adverse action notices. Shapley values, and other local feature importance approaches, provide a convenient methodology to rank the contribution of input features to final model decisions and potentially generate adverse action notices. In a number of other application domains, broader interpretability is also legal necessity. Explanation, along with white-box models, model debugging, disparate impact analysis, and the documentation they enable, can also be required under the Civil Rights Acts of 1964 and 1991, the Americans with Disabilities Act, the Genetic Information Nondiscrimination Act, the Health Insurance Portability and Accountability Act, the Fair Housing Act, Federal Reserve SR 11-7, the European Union (EU) Greater Data Privacy Regulation (GDPR) Article 22, and other regulatory statutes \cite{ff_interpretability}.
+Explainable ML tools like surrogate models, partial dependence plots, and global feature importance are already used to document, understand, and validate different types of models in the financial services industry \cite{lime-sup}.\footnote{Working paper: \url{https://www.linkedin.com/feed/update/urn:li:activity:6526203034966507520}.} Moreover, adverse action notices are mandated under the Equal Credit Opportunity Act (ECOA) and the Fair Credit Reporting Act (FCRA) for many credit lending decisions in the United States.\footnote{See \url{https://consumercomplianceoutlook.org/2013/second-quarter/adverse-action-notice-requirements-under-ecoa-fcra/}.} If machine learning is used for such decisions it must be explained in terms of adverse action notices. Shapley values, and other local feature importance approaches, provide a convenient methodology to rank the contribution of input features to final model decisions and potentially generate adverse action notices. In a number of other application domains, broader interpretability is also legal necessity. Explanation, along with white-box models, model debugging, disparate impact analysis, and the documentation they enable, can also be required under the Civil Rights Acts of 1964 and 1991, the Americans with Disabilities Act, the Genetic Information Nondiscrimination Act, the Health Insurance Portability and Accountability Act, the Fair Housing Act, Federal Reserve SR 11-7, the European Union (EU) Greater Data Privacy Regulation (GDPR) Article 22, and other regulatory statutes \cite{ff_interpretability}.
 
 \section{Misconception: All the Key Terms in Explainable ML are Undefined}
 
@@ -117,26 +128,31 @@ While the explainable ML field is far from embracing a clear and accepted taxono
 
 \section{Misconception: Explainable ML is Just Models of Models}
 
-Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from 1.) a global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textbf{many explainable ML techniques have nothing to do with surrogate models!}   
-
-One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. There are many other explainable ML methods that operate on trained models directly such as partial dependence, ALE, and ICE plots \cite{esl}, \cite{ale_plot}, \cite{ice_plots}. Notably, surrogate models and explanatory techniques that operate directly on trained models can be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. 
+Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from 1.) a global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \textbf{many explainable ML techniques have nothing to do with surrogate models!} One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. 
 
 \begin{figure}
-	\begin{subfigure}{.45\textwidth}
-  		\includegraphics[height=.52\linewidth, width=1.02\linewidth]{img/pdp_ice.png}
-  		\caption{}
-  		\label{fig:pdp_ice}
-	\end{subfigure}\hspace{5pt}
 	\begin{subfigure}{.55\textwidth}
 		\includegraphics[height=0.6\linewidth, width=.95\linewidth]{img/dt_surrogate.png}
-  		\caption{}
+  		\caption{$h_{\text{tree}}$ is an approximate overall flowchart for $g_{\text{GBM}}$.}
   		\label{fig:dt_surrogate}
+	\end{subfigure}\hspace{5pt}
+	\begin{subfigure}{.45\textwidth}
+  		\includegraphics[height=.52\linewidth, width=1.02\linewidth]{img/pdp_ice.png}
+  		\caption{Partial dependence and ICE curves generated directly for $g_{\text{GBM}}$.}
+  		\label{fig:pdp_ice}
 	\end{subfigure}
-	\caption{}
+	\caption{$h_{\text{tree}}$ displays known interactions between $X_{\text{num9}}$ and $X_{\text{num8}}$ (along with potential noise interactions) for $\sim -0.923 < X_{\text{num9}} <  \sim 1.04$. Modeling of the known interaction between $X_{\text{num9}}$ and $X_{\text{num8}}$ in $f$ by $g_{\text{GBM}}$ is confirmed by the divergence of partial dependence and ICE curves for $\sim -1 < X_{\text{num9}} <  \sim 1$.}
 	\label{fig:pdp_ice_dt_surrogate}
 \end{figure}
 
-For a curated list of many other different types of white-box modeling techniques, and model-specific, model-agnostic, and surrogate model explainable ML techniques, please see:
+There are many other explainable ML methods that operate on trained models directly such as partial dependence, ALE, and ICE plots \cite{esl}, \cite{ale_plot}, \cite{ice_plots}. Surrogate models and explanatory techniques that operate directly on trained models can also be combined, for instance by using partial dependence, ICE, and surrogate decision trees to investigate and confirm modeled interactions \cite{art_and_sci}. In Figure \ref{fig:pdp_ice_dt_surrogate} an unconstrained GBM, $g_{\text{GBM}}$, models a known signal generating function $f$:
+
+\begin{equation}
+\label{eq:f}
+f(\mathbf{X}) = \twopartdef {1} {X_{\text{num}1} * X_{\text{num}4} + |X_{\text{num}8}| * X_{\text{num}9}^2 + e \geq 0.42} {0} {X_{\text{num}1} * X_{\text{num}4} + |X_{\text{num}8}| * X_{\text{num}9}^2 + e < 0.42}
+\end{equation}
+
+\noindent where $e$ signifies the injection of random noise in the form of label switching for roughly 15\% of the training and validation observations.\footnote{Code to replicate Figure \ref{fig:pdp_ice_dt_surrogate} is available here: \url{https://github.com/h2oai/mli-resources/tree/master/lime_shap_treeint_compare}.} $g_{\text{GBM}}$ is then trained such that $g_{\text{GBM}} \approx f$. $h_{\text{tree}}$, displayed in Figure \ref{fig:dt_surrogate}, is extracted such that $h_{\text{tree}}(\mathbf{X}) \approx g_{\text{GBM}}(\mathbf{X}) \approx f(\mathbf{X})$ in validation data. Partial dependence and ICE plots are generated directly for $g_{\text{GBM}}$ in the same validation data and overlaid in Figure \ref{fig:pdp_ice}. The parent-child node relationship displayed between $X_{\text{num9}}$ and $X_{\text{num8}}$ for $\sim -0.923 < X_{\text{num9}} <  \sim 1.04$ in \ref{fig:dt_surrogate} and the divergence of ICE and partial dependence curves in \ref{fig:pdp_ice} for $\sim -1 < X_{\text{num9}} <  \sim 1$ help confirm and understand how $g_{\text{GBM}}$ learned the interaction between $X_{\text{num}8}$ and $X_{\text{num}9}$ in $f$. Like in Figure \ref{fig:global_shap_resid}, combining different approaches provided additional, beneficial information about a complex ML model. For a curated list of many other different types of white-box modeling techniques, and model-specific, model-agnostic, and surrogate model explainable ML techniques, please see:
 
 \begin{center}
 \url{https://github.com/jphall663/awesome-machine-learning-interpretability}
@@ -154,27 +170,45 @@ If used disingenuously, explainable ML methods probably do provide such cover \c
 
 A few well-known publications have focused either on white-box modeling techniques (e.g. \cite{slim}, \cite{sbrl}) or on post-hoc explanations (e.g. \cite{lime}, \cite{shapley}), but the two can be used together in the context of a broader and more human-centered machine learning workflow as illustrated in Figure \ref{fig:hc_ml}. 
 
-\begin{figure}[htb]
+Consider the seemingly useful example case of augmenting globally interpretable models with local post-hoc explanations: A practitioner could train a single pruned decision tree as a globally interpretable model then use local explanations in the form of Shapley feature importance. This would enable the practitioner to see accurate numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree. Even for interpretable models, such as linear models and decision trees, it has been shown that Shapley values present accuracy and consistency advantages over standard feature attribution methods \cite{lipovetsky2001analysis}, \cite{tree_shap}, \cite{shapley}. Isn't an augmented global and local understanding of the model more desirable than the white-box model or the post-hoc explanations alone?\\ 
+
+% insert figure - Shap and Single DT
+
+\textbf{Corollary Misconception: Explainable ML Methods and Fairness Methods are Somehow Mutually Exclusive}: Like white-box models, fairness methods (e.g. \cite{hardt2016equality}, \cite{feldman2015certifying}) are often presented in different articles than post-hoc explanatory methods. However, in banks, using post-hoc explanatory tools such as partial dependence plots to comply with model documentation guidance often goes hand-in-hand with using disparate impact analysis to comply with fair lending regulations.\footnote{Working paper: \url{https://www.linkedin.com/feed/update/urn:li:activity:6526203034966507520}.}\textsuperscript{,}\footnote{White paper: \url{https://www.aba.com/Compliance/Documents/FairLendingWhitePaper2017Apr.pdf}}\textsuperscript{,}\footnote{Policy Statement on Discrimination in Lending: \url{https://www.govinfo.gov/content/pkg/FR-1994-04-15/html/94-9214.htm}} 
+
+\begin{table}[ht]
+	\centering
+	\caption{Basic group parity metrics across different marital statuses for monotonically constrained GBM model, $g_{\text{mono}}$, trained on the UCI credit card dataset.} 
+	\footnotesize
+	\begin{tabular}{ | p{1.1cm} | p{1.3cm} | p{1.3cm} | p{1.2cm}| p{1.2cm} | p{1.2cm} | p{1.2cm} | p{1.2cm} | p{1.2cm} | p{1.2cm} | }
+	\hline
+	& Accuracy Disparity & TPR\newline Disparity & Precision\newline Disparity & TNR\newline Disparity & NPV\newline Disparity & FPR\newline Disparity & FDR \newline Disparity & FNR\newline Disparity & FOR\newline Disparity \\ 
+	\hline
+	\texttt{married} & 1 .00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+	\hline	
+	\texttt{single} & 1.03 & 0.99 & 1.01 &	1.03 & 1.02 & 0.85 & 0.99 & 1.01 &	0.88 \\
+	\hline	
+	\texttt{divorced} & 0.93 &	0.81 &	0.81 &	0.96 & 0.96 & \textcolor{red}{1.25}  & 1.23 &	1.22 &	1.24 \\
+	\hline
+	\texttt{other} & 1.12 & \textcolor{red}{0.62} &	\textcolor{red}{1.85} & 1.17 & 1.01 & \textcolor{red}{0} & \textcolor{red}{0} & \textcolor{red}{1.44} & 0.92 \\
+	\hline	
+	\end{tabular}
+	\label{tab:dia}
+\end{table}
+
+Table \ref{tab:dia} displays basic group parity metrics for a monotonically constrained GBM model, $g_{\text{mono}}$, trained on the UCI credit card data.\footnote{Code to replicate Table \ref{tab:dia} is available here: \url{https://github.com/jphall663/xai_misconceptions}.} In this example scenario, $g_{\text{mono}}$ displays group parity according to the four-fifths rule with \texttt{married} as the reference level for single customers, but exposes potential disparate impact for \texttt{divorced} customers and customers with martial status of \texttt{other} (for which there is very little training data).
+
+\section*{Conclusion}
+
+\begin{figure}
 	\begin{center}
 		\includegraphics[scale=0.15]{img/hc_ml.png}
 		\caption{A diagram of a proposed human-centered machine learning workflow in which explanations (highlighted in green) are used along with interpretable models, disparate impact analysis and remediation techniques, and other review and appeal mechanisms to create a fair, accountable, and transparent ML system.}
 		\label{fig:hc_ml}
 	\end{center}
-\end{figure}	
+\end{figure}
 
-Consider the seemingly useful example case of augmenting globally interpretable models with local post-hoc explanations: A practitioner could train a single pruned decision tree as a globally interpretable model then use local explanations in the form of Shapley feature importance. This would enable the practitioner to see accurate numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree. Even for interpretable models, such as linear models and decision trees, it has been shown that Shapley values present accuracy and consistency advantages over standard feature attribution methods \cite{lipovetsky2001analysis}, \cite{tree_shap}, \cite{shapley}. Isn't a complete global and local understanding of the model more desirable than the white-box model or the post-hoc explanations alone?\\ 
-
-% insert figure - Shap and Single DT
-
-\textbf{Corollary Misconception: Explainable ML Methods and Fairness Methods are Somehow Mutually Exclusive}: Like white-box models, fairness methods are often presented in different articles than post-hoc explanatory methods. However, in banks, using post-hoc explanatory tools such as partial dependence plots and local feature importance to comply with credit reporting regulations often goes hand-in-hand with using disparate impact analysis to comply with fair lending regulations. 
-
-% insert figure - use CC data marital status
-
-\section*{Conclusion}
-
-%Machine learning systems are used today to make life-altering decisions about employment, bail, parole, and lending. The scope of decisions delegated to machine learning systems seems likely only to expand in the future. Unfortunately serious discrimination, privacy, and even accuracy concerns can be raised about these systems. Many researchers and practitioners are tackling disparate impact, inaccuracy, privacy violations, and security vulnerabilities with a number of brilliant, but often siloed, approaches. This short text illustrates how to combine innovations from several sub-disciplines of machine learning research to train explainable, fair, trustable, and accurate predictive modeling systems. Together these techniques can create a new and truly human-centered type of machine learning suitable for use in business- and life-critical decision support.
-
-%Much groundbreaking work has been done in several related disciplines to make machine learning more interpretable and trustworthy, and the cursory application of traditional black-box ML to human-centered problems is now an outdated, ethically problematic, and potentially dangerous practice.
+Machine learning systems are used today to make life-altering decisions about employment, bail, parole, and lending.\footnote{ICLR 2019 model debugging workshop CFP: \url{https://debug-ml-iclr2019.github.io/}} The scope of decisions delegated to machine learning systems seems likely only to expand in the future. Many researchers and practitioners are tackling disparate impact, inaccuracy, privacy violations, and security vulnerabilities with a number of brilliant, but perhaps siloed, approaches. By addressing some common explainable ML misconceptions, this short text also gives examples of combining innovations from several sub-disciplines of machine learning research to train explainable, fair, and trustable predictive modeling systems. As proposed in Figure \ref{fig:hc_ml}, using these techniques together can create a new and truly human-centered type of machine learning suitable for use in business- and life-critical decision support. 
 
 \section*{Acknowledgemnts}
 
