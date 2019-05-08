@@ -1,18 +1,16 @@
 % Copyright Patrick Hall 2019
 % CC by 4.0 license
 % TODO: 
-% - replace hypotheticals with examples - see figures below
-% - define human centered ML in conclusion	/move figure 3 to conclusion 
-
+% - DIA on single DT instead
 
 \documentclass[fleqn]{article}
 
 \renewcommand\refname{}
 
-\title{On Explainable Machine Learning Misconceptions \& Human-Centered Machine Learning}
+\title{On Explainable Machine Learning Misconceptions \&\\ A More Human-Centered Machine Learning\footnote{\copyright \hspace{1pt} Patrick Hall 2019. This work in progress is shared under a CC by 4.0 license.}}
 
 \author{
-  Patrick Hall\footnote{H2O.ai and George Washington University} \footnote{\copyright \hspace{1pt} Patrick Hall 2019. This work in progress is shared under a CC by 4.0 license.}\\
+  Patrick Hall\footnote{H2O.ai and George Washington University} \\
   Washington, DC\\
   \texttt{patrick.hall@h2o.ai}
 }
@@ -59,7 +57,7 @@
 
 \section*{Introduction}
 
-Due to obvious community and commercial demand, explainable machine learning (ML) methods have already been implemented in popular open source software and in commercial software.\footnote{Like H2O-3, XGBoost, and various other Python and R packages. See: \url{https://github.com/jphall663/awesome-machine-learning-interpretability} for a longer, curated list of relevant open source software packages.}\textsuperscript{,}\footnote{For instance  Datarobot, H2O Driverless AI, SAS Visual Data Mining and Machine Learning, Zest AutoML, and likely several others.} Yet, as someone who has been involved in the implementation of explainable ML software for the past three years, I find a lot of what I read about the topic confusing and detached from my personal, hands-on experiences. This short text presents arguments, proposals, and references to address some observed explainable ML misconceptions. Please note that this text is not an attack on any party, and disagreements with any previous credible opinion pieces are mostly minor and technical.\footnote{For instance, say ``Please Stop Explaining Black Box Models for High Stakes Decisions'' \cite{please_stop}.} This text is instead a call for pragmatism from the trenches. It seeks to promote nuanced debate, responsible use, and continued development of explainable ML, and not dismissal or derision of the discipline.  Moreover, this text builds the seemingly natural case for a holistic approach to ML that includes interpretable (i.e ``white-box'') models along with explanatory, debugging, and disparate impact analysis techniques.\\
+Due to obvious community and commercial demand, explainable machine learning (ML) methods have already been implemented in popular open source software and in commercial software.\footnote{Like H2O-3, XGBoost, and various other Python and R packages. See: \url{https://github.com/jphall663/awesome-machine-learning-interpretability} for a longer, curated list of relevant open source software packages.}\textsuperscript{,}\footnote{For instance  Datarobot, H2O Driverless AI, SAS Visual Data Mining and Machine Learning, Zest AutoML, and likely several others.} Yet, as someone who has been involved in the implementation of explainable ML software for the past three years, I find a lot of what I read about the topic confusing and detached from my personal, hands-on experiences. This short text presents arguments, proposals, and references to address some observed explainable ML misconceptions. Please note that this text is not an attack on any party, and disagreements with any previous credible opinion pieces are mostly minor and technical.\footnote{For instance, say ``Please Stop Explaining Black Box Models for High Stakes Decisions'' \cite{please_stop}.} This text is instead a call for pragmatism from the trenches. It seeks to promote nuanced debate, responsible use, and continued development of explainable ML, and not dismissal or derision of the discipline.  Moreover, this text builds the seemingly natural case for a holistic approach to ML that includes interpretable (i.e. ``white-box'') models along with explanatory, debugging, and disparate impact analysis techniques.\\
 
 %``Please stop doing explainable machine learning,'' extolled one of the brightest minds in machine learning (ML) with the title of a recent and well-reasoned essay \cite{please_stop}. A related and admittedly-controversial short talk also included points such as, ``[Explainable ML] forces you to rely on two models instead of one,'' and argued that explainable machine learning can be a foil for companies and governments to conduct unsavory or negligent deeds with black-box models.\footnote{Statistics at a Crossroads, Webinar 2. URL: \url{https://zoom.us/recording/play/0y-iI9HamgyDzzP2k_jiTu6jB7JgVVXnjWZKDMbnyRTn3FsxTDZy6Wkrj3_ekx4J?startTime=1538497702000}} Perhaps even more noteworthy was the online response, which included musings such as, ``don’t forget hidden assumptions for explainable ML (e.g., locally linear behavior near predictions),'' and lamentations like, ``no one has explained to me what 'explainable' or 'interpretable' is.'' \footnote{Twitter thread: \url{https://twitter.com/tdietterich/status/1052680788389507073}} This article aims to clear up such misconceptions and fill the gaps in community knowledge exposed by these sentiments. Strangely, neither the talk nor the follow-up discussions seemed to allow for combining white-box models and post-hoc explanatory techniques. 
 
@@ -74,23 +72,23 @@ Due to obvious community and commercial demand, explainable machine learning (ML
 To avoid ambiguity, several internal definitions and accompanying examples are put forward before discussing misconceptions. Here \textit{explainable ML} means mostly post-hoc techniques used to understand trained model mechanisms or predictions. Examples of common explainable ML techniques include:
 
 \begin{itemize}
-\item Local and global feature importance methods, in particular Shapley values \cite{shapley1988shapley}, \cite{keinan2004fair}, \cite{kononenko2010efficient}, \cite{shapley}.
-\item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{lime}. 
-\item Local and global visualizations of model predictions such as accumulated local effect (ALE), 1- and 2-dimensional partial dependence, and individual conditional expectation (ICE) plots \cite{ale_plot}, \cite{esl}, \cite{ice_plots}.
+\item Local and global feature importance methods, in particular Shapley values \cite{keinan2004fair}, \cite{shapley}, \cite{shapley1988shapley}, \cite{kononenko2010efficient}.
+\item Local and global model-agnostic surrogate models, such as surrogate decision trees and Local Interpretable Model-agnostic Explanations (LIME) \cite{dt_surrogate2}, \cite{viper}, \cite{dt_surrogate1}, \cite{lime-sup}, \cite{lime}. 
+\item Local and global visualizations of model predictions such as accumulated local effect (ALE) plots, 1- and 2-dimensional partial dependence plots, and individual conditional expectation (ICE) plots \cite{ale_plot}, \cite{esl}, \cite{ice_plots}.
 \end{itemize}  
 
-\noindent In this text \textit{model debugging} refers to testing ML models to increase trust in model mechanisms and predictions. Examples of model debugging techniques include variants of sensitivity (i.e. ``what-if?''), residual analysis, assertions, and units test used to verify the accuracy or security of ML models.\footnote{And other similar techniques, say those mentioned here: \url{https://debug-ml-iclr2019.github.io/}.} Model debugging should also include remediating any discovered errors or vulnerabilities. Herein \textit{fairness} techniques refer to disparate impact analysis, model selection by minimization of disparate impact, and remediation techniques such as disparate impact removal preprocessing or equalized odds post-processing \cite{feldman2015certifying}, \cite{hardt2016equality}.\footnote{And other similar techniques, say those mentioned here: \url{http://www.fatml.org/resources/relevant-scholarship}.} In this text \textit{interpretable} or \textit{white-box} models will include linear models, decision trees, constrained or Bayesian variants of traditional black-box ML models, or novel types of models designed to be directly interpretable. (Additional examples of interpretable modeling techniques include explainable neural networks (XNNs), monotonically constrained gradient boosting machines (GBMs)\footnote{As implemented in XGBoost (\url{https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html}) or H2O-3 (\url{https://github.com/h2oai/h2o-3/blob/master/h2o-py/demos/H2O_tutorial_gbm_monotonicity.ipynb}).}, scalable Bayesian rule lists, or super-sparse linear integer models (SLIMs) \cite{wf_xnn}, \cite{sbrl}, \cite{slim}.\footnote{And other similar techniques, say those mentioned here: \url{https://users.cs.duke.edu/~cynthia/papers.html}.}) Herein unconstrained, traditional black-box ML models, such as multilayer perceptron (MLP) neural networks and GBMs, are said to be directly uninterpretable, potentially unsafe for use on humans, but not necessarily completely unexplainable. 
+\noindent In this text \textit{model debugging} refers to testing ML models to increase trust in model mechanisms and predictions. Examples of model debugging techniques include variants of sensitivity (i.e. ``what-if?''), residual analysis, assertions, and units test used to verify the accuracy or security of ML models.\footnote{And other similar techniques, say those mentioned here: \url{https://debug-ml-iclr2019.github.io/}.} Model debugging should also include remediating any discovered errors or vulnerabilities. Herein \textit{fairness} techniques refer to disparate impact analysis, model selection by minimization of disparate impact, and remediation techniques such as disparate impact removal preprocessing or equalized odds post-processing \cite{feldman2015certifying}, \cite{hardt2016equality}.\footnote{And other similar techniques, say those mentioned here: \url{http://www.fatml.org/resources/relevant-scholarship}.} In this text \textit{interpretable} or \textit{white-box} models will include linear models, decision trees, constrained or Bayesian variants of traditional black-box ML models, or novel types of models designed to be directly interpretable. (Additional examples of interpretable modeling techniques include explainable neural networks (XNNs), monotonically constrained gradient boosting machines (GBMs)\footnote{As implemented in XGBoost (\url{https://xgboost.readthedocs.io/en/latest/tutorials/monotonic.html}) or H2O-3 (\url{https://github.com/h2oai/h2o-3/blob/master/h2o-py/demos/H2O_tutorial_gbm_monotonicity.ipynb}).}, scalable Bayesian rule lists, or super-sparse linear integer models (SLIMs), \cite{slim}, \cite{wf_xnn}, \cite{sbrl}.\footnote{And other similar techniques, say those mentioned here: \url{https://users.cs.duke.edu/~cynthia/papers.html}.}) Herein unconstrained, traditional black-box ML models, such as multilayer perceptron (MLP) neural networks and GBMs, are said to be directly uninterpretable, potentially unsafe for use on humans, but not necessarily completely unexplainable. 
 
 \section{Misconception: Explanations are Necessary and Sufficient to Establish Trust in ML}
 
 Explanations are likely necessary for trust in many cases, but certainly not sufficient for trust in all cases. 
-Explanation, as a general concept, is related more directly to understanding and transparency than to trust.\footnote{The Merriam-Webster definition of \textit{explain}, accessed April 21\textsuperscript{st} 2019, does not mention \textit{trust}} Simply put, one can understand and explain a model without trusting it. One can also trust a model and not be able to understand or explain it. Consider the following example scenarios.
+Explanation, as a general concept, is related more directly to understanding and transparency than to trust.\footnote{The Merriam-Webster definition of \textit{explain}, accessed May 8\textsuperscript{th} 2019, does not mention \textit{trust}: \url{https://www.merriam-webster.com/dictionary/explain}.} Simply put, one can understand and explain a model without trusting it. One can also trust a model and not be able to understand or explain it. Consider the following example scenarios.
 
 \begin{itemize}
 
-\item \textbf{Explanation and understanding without trust}: In Figure \ref{fig:global_shap_resid}, global Shapley explanations and residual analysis identify a pathology in an unconstrained GBM model, $g_{\text{GBM}}$, trained on the UCI credit card data \cite{uci}.\footnote{Code to replicate Figure \ref{fig:global_shap_resid} is available here: \url{https://github.com/jphall663/xai_misconceptions}.} $g_{\text{GBM}}$ over emphasizes the input feature \texttt{PAY\_0}, or a customer's most recent repayment status. Due to over-emphasis of \texttt{PAY\_0}, $g_{\text{GBM}}$ is often unable to predict on-time payment if recent payments are delayed (\texttt{PAY\_0} $>$ 1), causing large negative residuals. $g_{\text{GBM}}$ is also often unable to predict default if recent payments are made on-time (\texttt{PAY\_0} $\leq$ 1), causing large positive residuals. In this example scenario, $g_{\text{GBM}}$ is explainable, but not trustworthy. 
+\item \textbf{Explanation and understanding without trust}: In Figure \ref{fig:global_shap_resid}, global Shapley explanations and residual analysis identify a pathology in an unconstrained GBM model, $g_{\text{GBM}}$, trained on the UCI credit card dataset \cite{uci}.\footnote{Code to replicate Figure \ref{fig:global_shap_resid} is available here: \url{https://github.com/jphall663/xai_misconceptions}.} $g_{\text{GBM}}$ over emphasizes the input feature \texttt{PAY\_0}, or a customer's most recent repayment status. Due to over-emphasis of \texttt{PAY\_0}, $g_{\text{GBM}}$ is often unable to predict on-time payment if recent payments are delayed (\texttt{PAY\_0} $>$ 1.5), causing large negative residuals. $g_{\text{GBM}}$ is also often unable to predict default if recent payments are made on-time (\texttt{PAY\_0} $\leq$ 1.5), causing large positive residuals. In this example scenario, $g_{\text{GBM}}$ is explainable, but not trustworthy. 
 
-\begin{figure}
+\begin{figure}[htb!]
 	\begin{subfigure}{.4\textwidth}
   		\includegraphics[height=1.17\linewidth, width=1.05\linewidth]{img/global_shap.png}
   		\caption{Consistent global Shapley feature importance values for $g_{\text{GBM}}$.}
@@ -101,7 +99,7 @@ Explanation, as a general concept, is related more directly to understanding and
   		\caption{$g_{\text{GBM}}$ deviance residuals and predictions by \texttt{PAY\_0}.}
   		\label{fig:resid}
 	\end{subfigure}
-	\caption{An unconstrained GBM probability of default model, $g_{\text{GBM}}$, over-emphasizes the importance of the input feature \texttt{PAY\_0}, a customer's most recent repayment status. $g_{\text{GBM}}$ produces large positive residuals when \texttt{PAY\_0} indicates on-time payments (\texttt{PAY\_0} $\leq$ 1) and large negative residuals when \texttt{PAY\_0} indicates late payments (\texttt{PAY\_0} $>$ 1).}
+	\caption{An unconstrained GBM probability of default model, $g_{\text{GBM}}$, over-emphasizes the importance of the input feature \texttt{PAY\_0}, a customer's most recent repayment status. $g_{\text{GBM}}$ produces large positive residuals when \texttt{PAY\_0} indicates on-time payments (\texttt{PAY\_0} $\leq$ 1) and large negative residuals when \texttt{PAY\_0} indicates late payments (\texttt{PAY\_0} $>$ 1). $g_{\text{GBM}}$ is explainable, but probably not trustworthy.}
 	\label{fig:global_shap_resid}
 \end{figure}
 
@@ -115,9 +113,11 @@ If trust in models is your goal, then explanations alone are not sufficient. How
 
 Explainable ML tools like surrogate models, partial dependence plots, and global feature importance are already used to document, understand, and validate different types of models in the financial services industry \cite{lime-sup}, \cite{wf_xnn}.\footnote{Working paper: \url{https://www.linkedin.com/feed/update/urn:li:activity:6526203034966507520}.} Moreover, adverse action notices are mandated under the Equal Credit Opportunity Act (ECOA) and the Fair Credit Reporting Act (FCRA) for many credit lending, employment, and insurance decisions in the United States.\footnote{See: \url{https://consumercomplianceoutlook.org/2013/second-quarter/adverse-action-notice-requirements-under-ecoa-fcra/}.} If machine learning is used for such decisions it must be explained in terms of adverse action notices.\footnote{This is apparently \textit{already} happening: \url{https://www.prnewswire.com/news-releases/new-patent-pending-technology-from-equifax-enables-configurable-ai-models-300701153.html}.} Shapley values, and other local feature importance approaches, provide a convenient methodology to rank the direct contribution of input features to final model decisions and potentially generate customer-specific adverse action notices. In a number of other application domains, broader interpretability is also legal necessity. Explanation, along with white-box models, model debugging, disparate impact analysis, and the documentation they enable, can also be required under the Civil Rights Acts of 1964 and 1991, the Americans with Disabilities Act, the Genetic Information Nondiscrimination Act, the Health Insurance Portability and Accountability Act, the Fair Housing Act, Federal Reserve SR 11-7, the European Union (EU) Greater Data Privacy Regulation (GDPR) Article 22, and other regulatory statutes \cite{ff_interpretability}.\\
 
-Aside from regulatory mandates, explanation enables logical appeal processes for automated decisions made by ML models. Consider being negatively impacted by an erroneous black-box model decision, say for instance being mistakenly denied a loan or parole. How would you argue your case for appeal without knowing how model decisions were made? According the New York Times, a man named Glenn Rodr\'iguez found himself in this unfortunate position in Upstate New York in 2016.\footnote{This too is happening \textit{today}: \url{https://www.nytimes.com/2017/06/13/opinion/how-computers-are-harming-criminal-justice.html}.} 
+Aside from regulatory mandates, explanation enables logical appeal processes for automated decisions made by ML models. Consider being negatively impacted by an erroneous black-box model decision, say for instance being mistakenly denied a loan or parole. How would you argue your case for appeal without knowing how model decisions were made? According the New York Times, a man named Glenn Rodr\'iguez found himself in this unfortunate position in Upstate New York in 2016.\footnote{This too is happening \textit{today}: \url{https://www.nytimes.com/2017/06/13/opinion/how-computers-are-harming-criminal-justice.html}.}\\
 
-\section{Misconception: All the Key Terms in Explainable ML are Undefined}
+Some may argue that, outside of regulated dealings, for a model with little or no impact on humans and that has been thoroughly and responsibly tested by knowledgeable practitioners, that explanation is \textit{really} unnecessary. While that statement appears technically true, the counter argument in this case centers on human learning from ML models. Explanatory techniques allow us to gain insights from complex models about nonlinear phenomena and complex interactions -- information that may sometimes be unlearnable by linear models. Why go through the weeks, months, or years of training and deploying a production ML system, and not take a small percentage of that time to learn about the model's findings?\\ 
+
+\section{Misconception: All the Key Ideas in Explainable ML are Undefined}
 
 Helpful definitions that apply to explainable ML have been put forward, including:
 
@@ -126,15 +126,15 @@ Helpful definitions that apply to explainable ML have been put forward, includin
 \item \textbf{A Good Explanation}: ``When you can no longer keep asking why'' -- in ``Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning'' by Gilpin et al. (2018) \cite{gilpin2018explaining}. (Gilpin et al. also provide several clear constructs for describing more specific types of explanations.) 
 \end{itemize}
 
-While the explainable ML field is far from embracing a clear and accepted taxonomy of concepts or an exhaustive and precise vocabulary, these two thoughtful definitions appear to link explanations to some ML process being interpretable. Moreover, many authors have made significant attempts to grapple with a variety of general concepts related to interpretability and explanations, including ``A Survey Of Methods For Explaining Black Box Models'' by Guidotti et al. (2018), Zachary Lipton's ``The Mythos of Model Interpretability'' (2016), Christoph Molnar's \textit{Interpretable Machine Learning} (2018), and Adrian Weller's ``Challenges for Transparency'' (2017) \cite{guidotti2018survey},  \cite{lipton1}, \cite{molnar}, \cite{weller2017challenges}. 
+While the explainable ML field is far from embracing a clear and accepted taxonomy of concepts or an exhaustive and precise vocabulary, these two thoughtful definitions appear to link explanations to some ML process being interpretable. Moreover, many authors have made significant attempts to grapple with a variety of general concepts related to interpretability and explanations, including ``A Survey Of Methods For Explaining Black Box Models'' by Guidotti et al. (2018), Zachary Lipton's ``The Mythos of Model Interpretability'' (2016), Christoph Molnar's \textit{Interpretable Machine Learning} (2018), and Adrian Weller's ``Challenges for Transparency'' (2017) \cite{guidotti2018survey},  \cite{lipton1}, \cite{molnar}, \cite{weller2017challenges}.\\ 
+
+\noindent \textbf{Misconception Corollary: Interpretability is Unquantifiable.} While interpretability is difficult to quantify, credible research efforts into scientific measures of interpretability are underway \cite{friedler2019assessing}, \cite{molnar2019quantifying}. 
 
 \section{Misconception: Explainable ML is Just Models of Models}
 
-%cite viper? and the next one
-
 Models of models, or surrogate models, can be helpful explanatory tools, but they are usually approximate, low-fidelity explainers. Aside from 1.) a global summary of a complex model provided by a surrogate model can be helpful sometimes and 2.) much work in explainable ML has been directed toward improving the fidelity and usefulness of surrogate models \cite{dt_surrogate1}, \cite{dt_surrogate2}, \cite{lime-sup}, \cite{wf_xnn}, \cite{viper}, \textbf{many explainable ML techniques have nothing to do with surrogate models!} One of the most exciting breakthroughs for supervised learning problems in explainable ML is the application of a coalitional game theory concept, Shapley values, to compute feature contributions which are consistent globally and accurate locally using the trained model itself \cite{kononenko2010efficient}, \cite{shapley}. An extension of this idea, called tree SHAP, has already been implemented for popular tree ensemble methods \cite{tree_shap}. 
 
-\begin{figure}
+\begin{figure}[htb!]
 	\begin{subfigure}{.55\textwidth}
 		\includegraphics[height=0.6\linewidth, width=.95\linewidth]{img/dt_surrogate.png}
   		\caption{Na\"ive $h_{\text{tree}}$ is an approximate overall flowchart for $g_{\text{GBM}}$.}
@@ -162,29 +162,29 @@ f(\mathbf{X}) = \twopartdef {1} {X_{\text{num}1} * X_{\text{num}4} + |X_{\text{n
 %\url{https://github.com/jphall663/awesome-machine-learning-interpretability}
 %\end{center}
 
-\textbf{Misconception Corollary: Explainable ML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models \cite{lime}. LIME is important, and imperfect, but just one of many explainable ML tools. And again, LIME can sometimes be combined with model-specific methods to yield deeper insights. Consider that tree SHAP can provide locally accurate and consistent point estimates for local feature importance whereas LIME can provide approximate information about modeled local linear trends around the same point. Figure \ref{fig:lime_shap} shows locally accurate Shapley contributions for a risky customer in a validation set sampled from the UCI credit card dataset. The Shapley values provide accurate point estimates for each feature's contribution to the prediction of a single, interpretable decision tree model, $g_{\text{tree}}(\mathbf{x})$. The LIME, $h_{\text{GLM}}$ coefficients show linear trends for the same features for all risky customers in the validation data. 
+\textbf{Misconception Corollary: Explainable ML is just LIME.} LIME, in it's most popular implementation, uses local linear surrogate models \cite{lime}. LIME is important, and imperfect, but just one of many explainable ML tools. And again, LIME can sometimes be combined with model-specific methods to yield deeper insights. Consider that tree SHAP can provide locally accurate and consistent point estimates for local feature importance whereas LIME can provide approximate information about modeled local linear trends around the same point. Table \ref{tab:lime} contains LIME, $h_{\text{GLM}}$, coefficients for a local region of a validation set sampled from the UCI credit card data defined by \texttt{PAY\_0 > 1.5}, or customers with a fairly high risk of default due to late most recent payments.\footnote{Code to replicate Table \ref{tab:lime} is available here: \url{https://github.com/jphall663/xai_misconceptions}.} $h_{\text{GLM}}$ models the predictions of a simple interpretable decision tree model, $g_{\text{tree}}$, displayed in figure \ref{fig:dt_shap}. $h_{\text{GLM}}$ coefficients show linear trends between features in the sampled set $\mathbf{X}_{\text{PAY\_0} > 1.5}$ and $g_{\text{tree}}(\mathbf{X}_{\text{PAY\_0}> 1.5})$. Because $h_{GLM}$ is relatively well-fit (0.73 $R^2$) and has a logical intercept (0.77), it can be used to reason about the modeled average behavior for risky customers and to differentiate the behavior of any one specific risky customer from their peers under the model. This additional information can be useful for model validation and compliance purposes.
 
-\begin{table}
-	\caption{}
+\begin{table}[htb!]
+	\caption{Coefficients for a local linear interpretable model, $h_{\text{GLM}}$, with an intercept of 0.77 and an $R^2$ of 0.73. $h_{\text{GLM}}$ is trained on a segment of the UCI credit card dataset containing higher-risk customers with late most recent repayment statuses, $\mathbf{X}_{PAY \_ 0 > 1.5}$, and the predictions of simple decision tree, $g_{\text{tree}}(\mathbf{X}_{\text{PAY\_0} > 1.5})$.}
 		\centering
 			%\tiny
-				\begin{tabular}{ | p{2cm} | p{1.5cm} | }
+				\begin{tabular}{ | p{2cm} | p{1.7cm} | }
 				\hline
-				$h_{\text{GLM}}$\newline Coefficient & Value \\ 
+				$h_{\text{GLM}}$\newline Feature & $h_{\text{GLM}}$\newline Coefficient \\ 
 				\hline
-				\texttt{PAY\_0 == 4} & \\
+				\texttt{PAY\_0 == 4} & $0.0009$ \\
 				\hline
-				\texttt{PAY\_2 == 3} & \\
+				\texttt{PAY\_2 == 3} & $0.0065$ \\
 				\hline
-				\texttt{PAY\_5 == 2} & \\
+				\texttt{PAY\_5 == 2} & $-0.0006$ \\
 				\hline
-				\texttt{PAY\_6 == 2} & \\
+				\texttt{PAY\_6 == 2} & $0.0036$ \\
 				\hline				
-				\texttt{BILL\_AMT1} & \\
+				\texttt{BILL\_AMT1} & $3.4339\mathrm{e}{-08}$ \\
 				\hline
-				\texttt{PAY\_AMT1} & \\
+				\texttt{PAY\_AMT1} & $4.8062\mathrm{e}{-07}$ \\
 				\hline	
-				\texttt{PAY\_AMT3} & \\	
+				\texttt{PAY\_AMT3} & $3.4338\mathrm{e}{-08}$ \\	
 				\hline	
 			\end{tabular}	
   		\label{tab:lime}
@@ -192,19 +192,35 @@ f(\mathbf{X}) = \twopartdef {1} {X_{\text{num}1} * X_{\text{num}4} + |X_{\text{n
 
 \section{Misconception: Explainable ML Methods Simply Provide Cover to Use Black-Box ML for Nefarious Purposes}
 
-If used disingenuously, explainable ML methods probably do provide such cover \cite{fair_washing}. But explainable ML methods were designed specifically to crack open those same nefarious and complex black-boxes. See Angwin et al. (2016) for evidence that hacking or stealing of commercial black-box models for oversight purposes is possible \cite{angwin16}. Such investigations would likely only be improved by advances in explanatory and fairness tools. Additionally, many important computer-based technological advances present similar double-edged sword dilemmas, e.g. social media or strong encryption. Rarely does the ability of a tool to be misused for malicious purposes disqualify it from being used as designed. 
+If used disingenuously, explainable ML methods probably do provide such cover \cite{fair_washing}. But explainable ML methods were designed specifically to crack open those same nefarious and complex black-boxes. See Angwin et al. (2016) for evidence that hacking or stealing of commercial black-box models for oversight purposes is possible \cite{angwin16}.\footnote{This text makes no claim on the quality of the analysis in Angwin et al. (2016), which has been criticized \cite{flores2016false}. This now infamous analysis is presented only as evidence that motivated activists can hack or steal commercial black-boxes.} Such investigations would likely only be improved by advances in explanatory and fairness tools. Additionally, many important computer-based technological advances present similar double-edged sword dilemmas, e.g. social media or strong encryption. Rarely does the ability of a tool to be misused for malicious purposes disqualify it from being used as designed. Given that explainable ML techniques have already been released in popular open source software, it seems there is a need for agreed-upon best practices and education on responsible use.  
+
 
 \section{Misconception: Explainable ML Methods and White-box Models are Somehow Mutually Exclusive} \label{sec:white_box}
 
+\begin{figure}[ht!]
+	\begin{subfigure}{.6\textwidth}
+		\includegraphics[height=.45\linewidth, width=1.15\linewidth]{img/dt.png}
+  		\caption{Simple decision tree, $g_{\text{tree}}$, trained on the UCI credit card data to predict default with validation AUC of 0.74. The decision policy of a high-risk individual is highlighted in red.}
+  		\label{fig:dt}
+	\end{subfigure}\hspace{50pt}
+	\begin{subfigure}{.4\textwidth}
+		\vspace{30pt}
+  		\includegraphics[height=.5\linewidth, width=.8\linewidth]{img/shap.png}
+  		\vspace{5pt}
+  		\caption{Locally-accurate Shapley contributions\\ for the highlighted individual's probability\\ of default.}
+  		\label{fig:shap}
+	\end{subfigure}
+	\caption{}
+	\label{fig:dt_shap}
+\end{figure}
+
 A few well-known publications have focused either on white-box modeling techniques (e.g. \cite{slim}, \cite{sbrl}) or on post-hoc explanations (e.g. \cite{lime}, \cite{shapley}), but the two can be used together in the context of a broader and more human-centered machine learning workflow as illustrated in Figure \ref{fig:hc_ml}. 
 
-Consider the seemingly useful example case of augmenting globally interpretable models with local post-hoc explanations: A practitioner could train a single pruned decision tree as a globally interpretable model then use local explanations in the form of Shapley feature importance. This would enable the practitioner to see accurate numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree. Even for interpretable models, such as linear models and decision trees, it has been shown that Shapley values present accuracy and consistency advantages over standard feature attribution methods \cite{lipovetsky2001analysis}, \cite{tree_shap}, \cite{shapley}. Isn't an augmented global and local understanding of the model more desirable than the white-box model or the post-hoc explanations alone?\\ 
-
-% insert figure - Shap and Single DT
+Consider the seemingly useful example case of augmenting globally interpretable models with local post-hoc explanations: A practitioner could train a single decision tree, a globally interpretable, model then use local explanations in the form of Shapley feature importance as illustrated in Figure \ref{fig:dt_shap}.\footnote{Code to replicate Figure \ref{fig:dt_shap} is available here: \url{https://github.com/jphall663/xai_misconceptions.}} This enables the practitioner to see accurate numeric feature contributions for each model prediction in addition to the entire directed graph of the decision tree. Even for interpretable models, such as linear models and decision trees, it has been shown that Shapley values present accuracy and consistency advantages over standard feature attribution methods \cite{lipovetsky2001analysis}, \cite{tree_shap}, \cite{shapley}. In Figure \ref{fig:dt_shap}, a simple decision tree, $g_{\text{tree}}$, is trained on the UCI credit card data set to predict probability of default. $g_{\text{tree}}$ has a validation AUC of 0.74. The decision-policy for a high-risk customer is highlighted in \ref{fig:dt} and the locally-accurate Shapley contributions for this same individual's predicted probability are displayed in \ref{fig:shap}. The Shapley values are helpful because they highlight the local importance of \texttt{PAY\_2}, the individual's second most recent repayment status, which could be missed by examing the decision policy alone. The Shapley values also enable the ranking of input features for each model decision, which is likely helpful for FCRA and ECOA compliance. Isn't this augmented global and local understanding of the model more desirable than the white-box model or the post-hoc explanations alone?\\ 
 
 \textbf{Corollary Misconception: Explainable ML Methods and Fairness Methods are Somehow Mutually Exclusive}: Like white-box models, fairness methods (e.g. \cite{hardt2016equality}, \cite{feldman2015certifying}) are often presented in different articles than post-hoc explanatory methods. However, in banks, using post-hoc explanatory tools such as partial dependence plots to comply with model documentation guidance often goes hand-in-hand with using disparate impact analysis to comply with fair lending regulations.\footnote{Working paper: \url{https://www.linkedin.com/feed/update/urn:li:activity:6526203034966507520}.}\textsuperscript{,}\footnote{White paper: \url{https://www.aba.com/Compliance/Documents/FairLendingWhitePaper2017Apr.pdf}}\textsuperscript{,}\footnote{Policy Statement on Discrimination in Lending: \url{https://www.govinfo.gov/content/pkg/FR-1994-04-15/html/94-9214.htm}} 
 
-\begin{table}
+\begin{table}[htb!]
 	\centering
 	\caption{Basic group parity metrics across different marital statuses for monotonically constrained GBM model, $g_{\text{mono}}$, trained on the UCI credit card dataset.} 
 	\footnotesize
@@ -228,7 +244,11 @@ Table \ref{tab:dia} displays basic group parity metrics for a monotonically cons
 
 \section*{Conclusion}
 
-\begin{figure}
+Machine learning systems are used today to make life-altering decisions about employment, bail, parole, and lending.\footnote{ICLR 2019 model debugging workshop CFP: \url{https://debug-ml-iclr2019.github.io/}} The scope of decisions delegated to machine learning systems seems likely only to expand in the future. Many researchers and practitioners are tackling disparate impact, inaccuracy, privacy violations, and security vulnerabilities with a number of brilliant, but perhaps siloed, approaches. By addressing some common explainable ML misconceptions, this short text also gives examples of combining innovations from several sub-disciplines of machine learning research to train explainable, fair, and trustable predictive modeling systems. As proposed in Figure \ref{fig:hc_ml}, using these techniques together can create a new and more human-centered type of machine learning potentially suitable for use in business- and life-critical decision support.\\
+
+\vspace{100pt}
+
+\begin{figure}[htb!]
 	\begin{center}
 		\includegraphics[scale=0.15]{img/hc_ml.png}
 		\caption{A diagram of a proposed human-centered machine learning workflow in which explanations (highlighted in green) are used along with interpretable models, disparate impact analysis and remediation techniques, and other review and appeal mechanisms to create a fair, accountable, and transparent ML system.}
@@ -236,15 +256,14 @@ Table \ref{tab:dia} displays basic group parity metrics for a monotonically cons
 	\end{center}
 \end{figure}
 
-Machine learning systems are used today to make life-altering decisions about employment, bail, parole, and lending.\footnote{ICLR 2019 model debugging workshop CFP: \url{https://debug-ml-iclr2019.github.io/}} The scope of decisions delegated to machine learning systems seems likely only to expand in the future. Many researchers and practitioners are tackling disparate impact, inaccuracy, privacy violations, and security vulnerabilities with a number of brilliant, but perhaps siloed, approaches. By addressing some common explainable ML misconceptions, this short text also gives examples of combining innovations from several sub-disciplines of machine learning research to train explainable, fair, and trustable predictive modeling systems. As proposed in Figure \ref{fig:hc_ml}, using these techniques together can create a new and truly human-centered type of machine learning suitable for use in business- and life-critical decision support. 
-
 \section*{Acknowledgemnts}
 
-The author thanks Pramit Choudhary and Navdeep Gill at H2O.ai for their input and insights. 
+The author thanks Pramit Choudhary, Navdeep Gill, and Christoph Molnar for their helpful input and insights. 
 
 %-------------------------------------------------------------------------------
 \section*{References}
 %-------------------------------------------------------------------------------
+\small
 \bibliographystyle{plain}
 \bibliography{xai_misconceptions}
 
