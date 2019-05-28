@@ -138,15 +138,15 @@ Models of models, or surrogate models, can be helpful explanatory tools, but the
 \begin{figure}[htb!]
 	\begin{subfigure}{.55\textwidth}
 		\includegraphics[height=0.6\linewidth, width=.95\linewidth]{img/dt_surrogate.png}
-  		\caption{Na\"ive $h_{\text{tree}}$ is an approximate overall flowchart for $g_{\text{GBM}}$.}
+  		\caption{Na\"ive $h_{\text{tree}}$, \textit{a surrogate model}, forms an approximate overall flowchart for the explained model, $g_{\text{GBM}}$.}
   		\label{fig:dt_surrogate}
 	\end{subfigure}\hspace{5pt}
 	\begin{subfigure}{.45\textwidth}
   		\includegraphics[height=.52\linewidth, width=1.02\linewidth]{img/pdp_ice.png}
-  		\caption{Partial dependence and ICE curves generated directly for $g_{\text{GBM}}$.}
+  		\caption{Partial dependence and ICE curves generated \textit{directly from the explained model}, $g_{\text{GBM}}$.}
   		\label{fig:pdp_ice}
 	\end{subfigure}
-	\caption{$h_{\text{tree}}$ displays known interactions between $X_{\text{num9}}$ and $X_{\text{num8}}$ (along with potential noise interactions) for $\sim -0.923 < X_{\text{num9}} <  \sim 1.04$. Modeling of the known interaction between $X_{\text{num9}}$ and $X_{\text{num8}}$ in $f$ by $g_{\text{GBM}}$ is confirmed by the divergence of partial dependence and ICE curves for $\sim -1 < X_{\text{num9}} <  \sim 1$.}
+	\caption{$h_{\text{tree}}$ displays known interactions in $f = X_{\text{num}1} * X_{\text{num}4} + |X_{\text{num}8}| * X_{\text{num}9}^2$ for $\sim -0.923 < X_{\text{num9}} <  \sim 1.04$. Modeling of the known interaction between $X_{\text{num9}}$ and $X_{\text{num8}}$ in $f$ by $g_{\text{GBM}}$ is confirmed by the divergence of partial dependence and ICE curves for $\sim -1 < X_{\text{num9}} <  \sim 1$. Explanations from a surrogate model have augmented and confirmed findings from a direct model visualization technique.}
 	\label{fig:pdp_ice_dt_surrogate}
 \end{figure}
 
